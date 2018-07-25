@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ylms.common.dao.ProvinceMapper">
+
+	<resultMap id="rsProvince" type="com.ylms.common.entity.Province">
+		<result property="id" column="id" />
+		<result property="provinceName" column="province_name" />
+	</resultMap>
+
+	<sql id="sql_column_items">
+		id,
+		province_name
+	</sql>
+
+
+<sql id="limit_sql">
+		<if test="page_sql != null and page_sql != ''">
+			${page_sql}
+		</if>
+	</sql>
+
+	<sql id="where_all">
+		<where>
+			<if test="findContent != null and findContent !='' ">
+				and (
+				LOWER(province_name) like
+				CONCAT("%",#{findContent,jdbcType=VARCHAR},"%")
+				)
+			</if>
+		</where>
+	</sql>
+
+
+	<!-- 普通的分页查询 -->
+	<select id="findAll" resultMap="rsProvince">
+		select
+		<include refid="sql_column_items" />
+		from province
+		<include refid="where_all" />
+		<include refid="limit_sql" />
+	</select>
+	<select id="findCount" resultMap="rsProvince">
+		select count(id) from province
+		<include refid="where_all" />
+	</select>
+
+	<select id="findById" resultMap="rsProvince" parameterType="java.lang.Long">
+		select
+		<include refid="sql_column_items" />
+		from province
+		<where>
+			ID = #{id}
+		</where>
+	</select>
+
+
+	<select id="list" resultMap="rsProvince">
+		select
+		<include refid="sql_column_items" />
+		from province
+		<where>
+			<if test="Province != null and Province.id != null ">
+				and id = #{Province.id}
+			</if>
+			<if test="Province != null and Province.provinceName != null ">
+				and province_name = #{Province.provinceName}
+			</if>
+		</where>
+		<if test="order != null and order != '' ">
+			order by ${order} ${sort}
+		</if>
+	</select>
+
+	<insert id="add" parameterType="com.ylms.common.entity.Province">
+		insert into province
+		(
+		id,
+		province_name
+		)
+		values
+		(
+		#{id, jdbcType=INTEGER},
+		#{provinceName, jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<update id="update" parameterType="com.ylms.common.entity.Province">
+		update province
+			<set>
+				<if test=" provinceName != null">province_name = #{provinceName, jdbcType=VARCHAR}</if>
+			</set>
+		<where>
+			ID = #{id,jdbcType=BIGINT}
+		</where>
+	</update>
+
+	<delete id="deleteById" parameterType="java.lang.Long">
+		delete from province
+		<where>
+			ID = #{id}
+		</where>
+	</delete>
+
+</mapper>

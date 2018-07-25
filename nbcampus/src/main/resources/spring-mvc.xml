@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:task="http://www.springframework.org/schema/task" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans.xsd 
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-4.0.xsd 
+	http://www.springframework.org/schema/task
+	http://www.springframework.org/schema/task/spring-task-4.0.xsd
+	http://www.springframework.org/schema/mvc 
+	http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
+
+
+	<bean name="springContextUtil" class="com.ylms.common.utils.SpringContextUtil"></bean>
+	
+	
+	
+	<!--自动扫描该包，使spring-mvc只扫描controller包中的类 (其中只有@Controller控制器)，不会重复扫描到@Service或者@Component -->
+	<context:component-scan
+		base-package="com.ylms.*.controller,com.ylms.*.*.controller,com.ylms.controller,com.ylms.liuliangbao" />
+	<!-- 扫描标签 -->
+	<context:component-scan base-package="com.ylms.*.*.tag;com.ylms.*.tag" />
+	<mvc:annotation-driven />
+	<mvc:resources mapping="/images/**" location="/images/" />
+	<mvc:resources mapping="/css/**" location="/css/" />
+	<mvc:resources mapping="/js/**" location="/js/" />
+	<!-- 处理请求返回json字符串的乱码问题 -->
+	<bean class="org.springframework.http.converter.StringHttpMessageConverter">
+		<property name="supportedMediaTypes">
+			<list>
+				<value>application/json;charset=UTF-8</value>
+			</list>
+		</property>
+	</bean>
+	
+	
+	
+	<bean name="api" class="com.ylms.core.tags.APITemplateModel"></bean>
+	
+	<!-- 生成邀请url链接，web首页跳转地址,区分pc和移动端 -->
+	<bean id="inviterUrl" class="com.ylms.common.utils.InviterUrl">
+		<!-- <property name="httpUrl" value="http://127.0.0.1:8080/nbcampus/common/getIndex.shtml?params=" 
+			/> <property name="webHttpUrl" value="http://127.0.0.1:8080/web_nbcampus/#/homepage?params=" 
+			/> -->
+		<property name="httpUrl"
+			value="http://47.104.239.130/common/getIndex.shtml?params=" />
+		<property name="webHttpUrl" value="http://47.104.239.130/#/homepage?params=" />
+		<!-- 判断是否是移动端 -->
+		<property name="agent">
+			<list>
+				<value>Android</value>
+				<value>iPhone</value>
+				<value>iPod</value>
+				<value>iPad</value>
+				<value>Windows Phone</value>
+				<value>MQQBrowser</value>
+				<value>BB10</value>
+				<value>MeeGo</value>
+				<value>Linux</value>
+			</list>
+		</property>
+	</bean>
+	
+	
+	
+	<bean
+		class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<ref bean="mappingJacksonHttpMessageConverter" />
+			</list>
+		</property>
+	</bean>
+	<!-- 全局异常处理 -->
+	<!-- <bean id="exceptionHandler" class="com.ylms.exception.DefaultExceptionHandler" 
+		/> -->
+
+
+	<bean id="mappingJacksonHttpMessageConverter"
+		class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+		<property name="supportedMediaTypes">
+			<list>
+				<bean class="org.springframework.http.MediaType">
+					<constructor-arg index="0" value="text" />
+					<constructor-arg index="1" value="plain" />
+					<constructor-arg index="2" value="UTF-8" />
+				</bean>
+				<bean class="org.springframework.http.MediaType">
+					<constructor-arg index="0" value="*" />
+					<constructor-arg index="1" value="*" />
+					<constructor-arg index="2" value="UTF-8" />
+				</bean>
+				<bean class="org.springframework.http.MediaType">
+					<constructor-arg index="0" value="text" />
+					<constructor-arg index="1" value="*" />
+					<constructor-arg index="2" value="UTF-8" />
+				</bean>
+				<bean class="org.springframework.http.MediaType">
+					<constructor-arg index="0" value="application" />
+					<constructor-arg index="1" value="json" />
+					<constructor-arg index="2" value="UTF-8" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+	
+	
+	
+	<!-- 处理图片路径的类(要注意tomcat设置的虚拟路径不要和页面的文件夹路径一样！否则404) -->
+	<bean class="com.ylms.common.utils.vcode.CommonImagesUrl">
+		<!-- 正式环境LINUX端图片静态地址 -->
+		<!-- <property name="logoImagesHttp" value="/home/webImages/" /> -->
+		<!-- 开发环境pc端图片静态地址 -->
+		<property name="logoImagesHttp" value="D:/webImages/" />
+	</bean>
+
+
+
+	<!-- 移动端信息配置 -->
+	<bean id="defaultTask" class="com.ylms.common.webTask.DefaultTask">
+		<!-- 默认显示广东省任务列表 -->
+		<property name="provinceId" value="1" />
+		<!-- 移动端会话超时配置(单位:秒) -->
+		<property name="webSessionOutTime" value="864000" />
+	</bean>
+
+
+
+	<!--===============通用视图解析器 begin=============== -->
+	<bean id="viewResolverCommon"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/prefecture/" />
+		<property name="suffix" value=".jsp" />
+		<!-- 可为空,方便实现自已的依据扩展名来选择视图解释类的逻辑 -->
+		<property name="viewClass">
+			<value> org.springframework.web.servlet.view.InternalResourceView
+			</value>
+		</property>
+		<property name="order" value="1" />
+	</bean>
+
+
+
+	<!-- 视图解析器 -->
+	<!-- 配置freeMarker视图解析器 -->
+	<bean id="viewResolverFtl"
+		class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+		<property name="viewClass"
+			value="com.ylms.core.freemarker.extend.FreeMarkerViewExtend" />
+		<!-- 把Freemarker 扩展一下，把相关属性加入进去。。。 -->
+		<property name="contentType" value="text/html; charset=utf-8" />
+		<property name="cache" value="true" />
+		<property name="suffix" value=".ftl" />
+		<property name="order" value="0" />
+	</bean>
+	
+	
+	
+	<!-- 配置freeMarker 拓展 -->
+	<!-- 我的自定义标签 -->
+	<bean id="myTags" class="com.ylms.core.tags.MyTags"></bean>
+	<bean id="freemarkerConfig" class="com.ylms.core.freemarker.extend.FreeMarkerConfigExtend">
+		<property name="templateLoaderPath">
+			<value>/WEB-INF/ftl/</value>
+		</property>
+		<property name="freemarkerVariables">
+			<map>
+				<!-- 配置自定义标签 ( mytags:自定义标签的名字) -->
+				<entry key="mytags" value-ref="myTags" />
+				<entry key="xml_escape" value-ref="fmXmlEscape" />
+				<entry key="api" value-ref="api" />
+			</map>
+		</property>
+		<property name="defaultEncoding">
+			<value>utf-8</value>
+		</property>
+		<property name="freemarkerSettings">
+			<props><!-- 315360000 -->
+				<!--用于解决前端报空指针问题 -->
+				<prop key="classic_compatible">true</prop>
+				<prop key="template_update_delay">0</prop>
+				<prop key="defaultEncoding">UTF-8</prop>
+				<prop key="url_escaping_charset">UTF-8</prop>
+				<prop key="locale">zh_CN</prop>
+				<prop key="boolean_format">true,false</prop>
+				<prop key="datetime_format">yyyy-MM-dd HH:mm:ss</prop>
+				<prop key="date_format">yyyy-MM-dd</prop>
+				<prop key="time_format">HH:mm:ss</prop>
+				<!-- <prop key="number_format">0.######</prop> -->
+				<prop key="number_format">#</prop>
+				<prop key="whitespace_stripping">true</prop>
+				<prop key="auto_import">
+					<!-- 自动装载，引入Freemarker，用于Freemarker Macro引入 -->
+					/common/config/top.ftl as _top,
+					/common/config/left.ftl as _left
+				</prop>
+			</props>
+		</property>
+	</bean>
+	
+	
+	
+	<!--===============通用视图解析器 end=============== -->
+	<bean id="fmXmlEscape" class="freemarker.template.utility.XmlEscape" />
+	<!-- 上传文件定义大小 -->
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver"
+		p:defaultEncoding="utf-8">
+		<property name="maxUploadSize" value="50048000" />
+	</bean>
+</beans>

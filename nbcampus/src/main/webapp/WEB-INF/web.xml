@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	id="WebApp_ID" version="3.0">
+	<filter>
+		<description>字符集过滤器</description>
+		<filter-name>encodingFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<description>字符集编码</description>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>encodingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<!-- 配置tomcat自带的拦截器CORS Filter -->
+	<filter>
+		<filter-name>CorsFilter</filter-name>
+		<filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
+		<!-- 允许访问资源的源列表,*表示任何来源都可以访问该资源 -->
+		<init-param>
+			<param-name>cors.allowed.origins</param-name>
+			<param-value>
+               http://10.16.32.143:888
+            </param-value>
+		</init-param>
+		<!-- 允许访问的http请求方法 -->
+		<init-param>
+			<param-name>cors.allowed.methods</param-name>
+			<param-value>
+                GET,POST,HEAD,OPTIONS,PUT
+            </param-value>
+		</init-param>
+		<!-- 在实际请求时可使用的请求头列表，用逗号隔开 -->
+		<init-param>
+			<param-name>cors.allowed.headers</param-name>
+			<param-value>
+                Content-Type,X-Requested-With,accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers,Access-Control-Allow-Origin
+            </param-value>
+		</init-param>
+		<init-param>
+			<param-name>cors.exposed.headers</param-name>
+			<param-value>
+                Access-Control-Allow-Origin,Access-Control-Allow-Credentials
+            </param-value>
+		</init-param>
+		<!-- 提示所支持的用户凭据类型，如cookies、HTTP授权或客户端证书。 -->
+		<init-param>
+			<param-name>cors.support.credentials</param-name>
+			<param-value>true</param-value>
+		</init-param>
+		<!-- 定义web浏览器可以缓存预检请求结果的时间长度，单位为秒 -->
+		<init-param>
+			<param-name>cors.preflight.maxage</param-name>
+			<param-value>3600</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>CorsFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+
+
+	<!-- 自定义跨域设置(该设置在9.0版本的tomcat中如果存在带参跨域请求会有问题!) -->
+	<!-- <filter> <filter-name>corsFilter</filter-name> <filter-class>com.ylms.common.corsFilter.CorsFilter</filter-class> 
+		</filter> <filter-mapping> <filter-name>corsFilter</filter-name> <url-pattern>/*</url-pattern> 
+		</filter-mapping> -->
+
+	<filter>
+		<filter-name>DruidWebStatFilter</filter-name>
+		<filter-class>com.alibaba.druid.support.http.WebStatFilter</filter-class>
+		<init-param>
+			<param-name>exclusions</param-name>
+			<param-value>*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*</param-value>
+		</init-param>
+		<init-param>
+			<param-name>principalSessionName</param-name>
+			<param-value>sessionInfo</param-value>
+		</init-param>
+		<init-param>
+			<param-name>profileEnable</param-name>
+			<param-value>true</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>DruidWebStatFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<servlet>
+		<servlet-name>DruidStatView</servlet-name>
+		<servlet-class>com.alibaba.druid.support.http.StatViewServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DruidStatView</servlet-name>
+		<url-pattern>/druid/*</url-pattern>
+	</servlet-mapping>
+
+	<!-- DelegatingFilterProxy类是一个代理类，所有的请求都会首先发到这个filter代理 然后再按照"filter-name"委派到spring中的这个bean。 
+		在Spring中配置的bean的name要和web.xml中的<filter-name>一样. targetFilterLifecycle，是否由spring来管理bean的生命周期，设置为true有个好处，可以调用spring后续的bean -->
+	<filter>
+		<filter-name>shiroFilter</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>shiroFilter</filter-name>
+		<url-pattern>*.shtml</url-pattern>
+	</filter-mapping>
+	<listener>
+		<description>spring监听器</description>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	<listener>
+		<listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
+	</listener>
+	<context-param>
+		<param-name>spring.profiles.active</param-name>
+		<param-value>dev</param-value>
+	</context-param>
+	<context-param>
+		<param-name>spring.profiles.default</param-name>
+		<param-value>dev</param-value>
+	</context-param>
+	<context-param>
+		<param-name>spring.liveBeansView.mbeanDomain</param-name>
+		<param-value>dev</param-value>
+	</context-param>
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath:spring.xml</param-value>
+	</context-param>
+	<servlet>
+		<description>spring mvc servlet</description>
+		<servlet-name>springMvc</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<description>spring mvc 配置文件</description>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath:spring-mvc.xml</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>springMvc</servlet-name>
+		<url-pattern>*.shtml</url-pattern>
+	</servlet-mapping>
+	<welcome-file-list>
+		<!-- 用来欺骗tomcat的假文件,这样就可以以shtml为后缀作为访问路径 -->
+		<welcome-file>/user/index.shtml</welcome-file>
+	</welcome-file-list>
+
+	<!-- 资源不存在或者服务出错时跳转以下路径 -->
+	<error-page>
+		<error-code>404</error-code>
+		<location>/open/404.shtml</location>
+	</error-page>
+	<error-page>
+		<error-code>500</error-code>
+		<location>/open/500.shtml</location>
+	</error-page>
+	<session-config>
+		<session-timeout>60</session-timeout>
+	</session-config>
+</web-app>

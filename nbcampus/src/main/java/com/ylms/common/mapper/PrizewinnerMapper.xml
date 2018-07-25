@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="PrizewinnerMapper">
+	
+	<resultMap id="rsPrizewinner" type="com.ylms.common.entity.Prizewinner">
+		<result property="id" column="id" />
+		<result property="taskId" column="task_id" />
+		<result property="taskName" column="task_name" />
+		<result property="tel" column="tel" />
+		<result property="nbNumber" column="nb_number" />
+		<result property="time" column="time" />
+		<result property="state" column="state" />
+	</resultMap>
+	
+	<sql id="sql_column_items">
+		id, 
+		task_id, 
+		task_name, 
+		tel, 
+		nb_number, 
+		time, 
+		state
+	</sql>
+	
+	
+	<select id="findById" resultMap="rsPrizewinner" parameterType="java.lang.Long">
+		select  <include refid="sql_column_items"/> from prizewinner
+		<where>
+			ID = #{id}
+		</where>
+	</select>
+	
+	
+	<select id="findList" resultMap="rsPrizewinner">
+		select  <include refid="sql_column_items"/> from prizewinner
+		<where>
+			<if test="Prizewinner != null and Prizewinner.id != null ">  
+				and id = #{Prizewinner.id}
+			</if>
+			<if test="Prizewinner != null and Prizewinner.taskId != null ">  
+				and task_id = #{Prizewinner.taskId}
+			</if>
+			<if test="Prizewinner != null and Prizewinner.taskName != null ">  
+				and task_name = #{Prizewinner.taskName}
+			</if>
+			<if test="Prizewinner != null and Prizewinner.tel != null ">  
+				and tel = #{Prizewinner.tel}
+			</if>
+			<if test="Prizewinner != null and Prizewinner.nbNumber != null ">  
+				and nb_number = #{Prizewinner.nbNumber}
+			</if>
+			<if test="timeBegin != null" >
+				<![CDATA[
+				and time >= #{timeBegin} 
+				]]> 
+			</if>
+			<if test="timeEnd != null" > 
+				<![CDATA[
+				and time <= #{timeEnd}
+				]]> 
+			</if>
+			<if test="Prizewinner != null and Prizewinner.state != null ">  
+				and state = #{Prizewinner.state}
+			</if>
+		</where>
+		<if test="order != null and order != '' ">  
+			order by ${order} ${sort}
+		</if>
+	</select>
+	
+	<insert id="add" parameterType="com.ylms.common.entity.Prizewinner">
+		insert into prizewinner 
+			(
+			id, 
+			task_id, 
+			task_name, 
+			tel, 
+			nb_number, 
+			time, 
+			state
+			) 
+		values
+			(
+			#{id, jdbcType=INTEGER}, 
+			#{taskId, jdbcType=VARCHAR}, 
+			#{taskName, jdbcType=VARCHAR}, 
+			#{tel, jdbcType=VARCHAR}, 
+			#{nbNumber, jdbcType=INTEGER}, 
+			#{time, jdbcType=DATE}, 
+			#{state, jdbcType=INTEGER}
+			)
+	</insert>
+	
+	<update id="update" parameterType="com.ylms.common.entity.Prizewinner">
+		update prizewinner
+			 <set> 
+				<if test=" taskId != null ">task_id = #{taskId, jdbcType=VARCHAR}, </if>
+				<if test=" taskName != null ">task_name = #{taskName, jdbcType=VARCHAR}, </if>
+				<if test=" tel != null ">tel = #{tel, jdbcType=VARCHAR}, </if>
+				<if test=" nbNumber != null ">nb_number = #{nbNumber, jdbcType=INTEGER}, </if>
+				<if test=" time != null ">time = #{time, jdbcType=DATE}, </if>
+				<if test=" state != null ">state = #{state, jdbcType=INTEGER}, </if>
+				ID = #{id}
+			<where>
+				ID = #{id}
+			</where>
+		</set>
+	</update>
+	
+	<delete id="deleteById" parameterType="java.lang.Long">
+		delete from prizewinner
+		<where>
+			ID = #{id}
+		</where>
+	</delete>
+	
+</mapper>

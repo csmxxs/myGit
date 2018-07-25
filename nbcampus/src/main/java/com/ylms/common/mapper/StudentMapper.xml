@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ylms.common.dao.StudentMapper">
+
+	<resultMap id="rsStudent" type="com.ylms.common.entity.Student">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="tel" column="tel" />
+		<result property="identity" column="identity" />
+		<result property="studentIdCard" column="student_id_card" />
+		<result property="school" column="school" />
+		<result property="shcoolProvinceId" column="school_province_id" />
+		<result property="timeofEnrollment" column="timeOf_enrollment" />
+		<result property="profession" column="profession" />
+		<result property="images" column="images" />
+		<result property="checkNumber" column="check_number" />
+		<result property="llb" column="llb" />
+		<result property="myCheck" column="my_check" />
+		<result property="causeReason" column="cause_reason" />
+		<result property="createTime" column="create_time" />
+		<result property="flag" column="flag" />
+		<result property="checkTime" column="check_time" />
+
+	</resultMap>
+
+	<sql id="sql_column_items">
+		id,
+		school_province_id,
+		name,
+		tel,
+		identity,
+		student_id_card,
+		school,
+		timeOf_enrollment,
+		profession,
+		images,
+		check_number,
+		llb,
+		my_check,
+		cause_reason,
+		create_time,
+		flag,
+		check_time
+	</sql>
+	<sql id="limit_sql">
+		<if test="page_sql != null and page_sql != ''">
+			${page_sql}
+		</if>
+	</sql>
+
+	<sql id="where_all">
+		<where>
+			flag=1
+			<if test="findContent != null and findContent !='' ">
+				and (
+				LOWER(name) like
+				CONCAT("%",#{findContent,jdbcType=VARCHAR},"%") or
+				LOWER(student_id_card) like
+				CONCAT("%",#{findContent,jdbcType=VARCHAR},"%") or
+				LOWER(identity)
+				like
+				CONCAT("%",#{findContent,jdbcType=VARCHAR},"%") or
+				LOWER(school)
+				like
+				CONCAT("%",#{findContent,jdbcType=VARCHAR},"%") or
+				LOWER(profession) like
+				CONCAT("%",#{findContent,jdbcType=VARCHAR},"%") or
+				LOWER(my_check)
+				like
+				CONCAT("%",#{findContent,jdbcType=INTEGER},"%")
+				)
+			</if>
+		</where>
+	</sql>
+
+
+	<!-- 普通的分页查询 -->
+	<select id="findAll" resultMap="rsStudent">
+		select
+		<include refid="sql_column_items" />
+		from student
+		<include refid="where_all" />
+		<include refid="limit_sql" />
+	</select>
+	<select id="findCount" resultMap="rsStudent">
+		select count(id) from student
+		<include refid="where_all" />
+	</select>
+
+
+
+
+	<select id="findById" resultMap="rsStudent" parameterType="java.lang.Long">
+		select
+		<include refid="sql_column_items" />
+		from student
+		<where>
+			ID = #{id} and flag=1
+		</where>
+	</select>
+	<!-- 根据号码查询 -->
+	<select id="findByTel" resultMap="rsStudent" parameterType="java.lang.Long">
+		select
+		<include refid="sql_column_items" />
+		from student
+		<where>
+			tel = #{tel} and flag=1
+		</where>
+	</select>
+
+	<insert id="add" parameterType="com.ylms.common.entity.Student">
+		insert into student
+		(
+		id,
+		school_province_id,
+		name,
+		tel,
+		identity,
+		student_id_card,
+		school,
+		timeOf_enrollment,
+		profession,
+		images,
+		check_number,
+		llb,
+		my_check,
+		cause_reason,
+		create_time,
+		flag,
+		check_time
+		)
+		values
+		(
+		#{id,
+		jdbcType=BIGINT},
+		#{shcoolProvinceId, jdbcType=INTEGER},
+		#{name,
+		jdbcType=VARCHAR},
+		#{tel, jdbcType=VARCHAR},
+		#{identity,
+		jdbcType=VARCHAR},
+		#{studentIdCard, jdbcType=VARCHAR},
+		#{school,
+		jdbcType=VARCHAR},
+		#{timeofEnrollment, jdbcType=DATE},
+		#{profession,
+		jdbcType=VARCHAR},
+		#{images, jdbcType=VARCHAR},
+		#{checkNumber,
+		jdbcType=INTEGER},
+		#{llb, jdbcType=VARCHAR},
+		0,
+		#{causeReason,
+		jdbcType=VARCHAR},
+		now(),
+		1,
+		#{checkTime, jdbcType=DATE}
+		)
+	</insert>
+
+	<!-- 默认为短信验证成功的号码注册一个账号 -->
+	<insert id="addTel" parameterType="com.ylms.common.entity.Student">
+		insert into student
+		(
+		id,
+		school_province_id,
+		name,
+		tel,
+		identity,
+		student_id_card,
+		school,
+		timeOf_enrollment,
+		profession,
+		images,
+		check_number,
+		llb,
+		my_check,
+		cause_reason,
+		create_time,
+		flag,
+		check_time
+		)
+		values
+		(
+		#{id,
+		jdbcType=BIGINT},
+		#{shcoolProvinceId, jdbcType=INTEGER},
+		#{name,
+		jdbcType=VARCHAR},
+		#{tel, jdbcType=VARCHAR},
+		#{identity,
+		jdbcType=VARCHAR},
+		#{studentIdCard, jdbcType=VARCHAR},
+		#{school,
+		jdbcType=VARCHAR},
+		#{timeofEnrollment, jdbcType=DATE},
+		#{profession,
+		jdbcType=VARCHAR},
+		#{images, jdbcType=VARCHAR},
+		0,
+		#{llb,
+		jdbcType=VARCHAR},
+		3,
+		#{causeReason, jdbcType=VARCHAR},
+		now(),
+		1,
+		#{checkTime, jdbcType=DATE}
+		)
+	</insert>
+
+
+
+	<update id="update" parameterType="com.ylms.common.entity.Student">
+		update student
+		<set>
+			cause_reason = #{causeReason,jdbcType=VARCHAR},
+			<if test=" name != null ">name = #{name, jdbcType=VARCHAR}, </if>
+			<if test=" shcoolProvinceId != null ">school_province_id = #{shcoolProvinceId,
+				jdbcType=INTEGER},
+			</if>
+			<if test=" tel != null ">tel = #{tel, jdbcType=VARCHAR}, </if>
+			<if test=" identity != null ">identity = #{identity, jdbcType=VARCHAR}, </if>
+			<if test=" studentIdCard != null ">student_id_card = #{studentIdCard, jdbcType=VARCHAR},
+			</if>
+			<if test=" school != null ">school = #{school, jdbcType=VARCHAR}, </if>
+			<if test=" timeofEnrollment != null ">timeOf_enrollment = #{timeofEnrollment, jdbcType=DATE},
+			</if>
+			<if test=" profession != null ">profession = #{profession, jdbcType=VARCHAR}, </if>
+			<if test=" images != null ">images = #{images, jdbcType=VARCHAR}, </if>
+			<!-- 每提交一次就加1,只有当跨月提交时变为1 -->
+			<if test=" checkNumber != null ">check_number = #{checkNumber, jdbcType=INTEGER}, </if>
+			<if test=" llb != null ">llb = #{llb, jdbcType=VARCHAR}, </if>
+			<!-- 每提交一次就为0 -->
+			<if test=" myCheck != null ">my_check = #{myCheck, jdbcType=INTEGER}, </if>
+			<!-- 每提交一次就清空 -->
+			<!-- 每次提交就修改时间 -->
+			<if test=" createTime == null ">create_time = now(), </if>
+			<if test=" flag != null ">flag = #{flag, jdbcType=INTEGER} </if>
+		</set>
+		<where>
+			ID = #{id}
+		</where>
+	</update>
+	<!-- 并不是真的删除 -->
+	<update id="deleteById" parameterType="java.lang.Long">
+		update student
+		<set>
+			flag = 2
+		</set>
+		<where>
+			ID = #{id}
+		</where>
+	</update>
+	<!-- 审核不通过 -->
+	<update id="check2ById" parameterType="java.lang.Long">
+		update student
+		<set>
+			my_check = 2,check_time = now()
+		</set>
+		<where>
+			ID = #{id}
+		</where>
+	</update>
+	<!-- 审核通过 -->
+	<update id="check1ById" parameterType="java.lang.Long">
+		update student
+		<set>
+			my_check = 1,check_time = now()
+		</set>
+		<where>
+			ID = #{id}
+		</where>
+	</update>
+
+	<!-- 查询被邀请人信息 -->
+	<select id="findStudentInviter" resultMap="rsStudent"
+		parameterType="String">
+		select
+		<include refid="sql_column_items" />
+		,b.invite_level inviteLevel
+		from student a, student_inviter b
+		<where>
+			a.tel=b.invitee_tel and
+			b.invite_tel=#{inviterTel,jdbcType=VARCHAR}
+		</where>
+	</select>
+
+</mapper>

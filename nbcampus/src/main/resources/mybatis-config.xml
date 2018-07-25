@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+
+	<settings>
+		<setting name="defaultExecutorType" value="REUSE" />
+		<!-- 将数据库字段命名规则A_COLUMN转换为Java使用的驼峰式命名规则aCloumn -->
+		<setting name="mapUnderscoreToCamelCase" value="false" />
+		<!-- 打开二级缓存 -->
+		<setting name="cacheEnabled" value="false" />
+	</settings>
+	<!-- 指定实体路径 -->
+	<typeAliases>
+		<package name="com.ylms.common.entity" />
+	</typeAliases>
+	<!-- 插件 -->
+<!-- 	<plugins>
+		mybatis分页插件
+		<plugin interceptor="com.github.pagehelper.PageHelper">
+			<property name="dialect" value="oracle" />
+		</plugin>
+	</plugins> -->
+</configuration>

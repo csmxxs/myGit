@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ylms.common.dao.BannerMapper">
+
+	<resultMap id="rsBanner" type="com.ylms.common.entity.Banner">
+		<result property="id" column="id" />
+		<result property="bannerId" column="banner_id" />
+		<result property="state" column="state" />
+		<result property="name" column="name" />
+		<result property="bannerHttp" column="banner_http" />
+		<result property="imagesHttp" column="images_http" />
+		<result property="clickNumber" column="click_number" />
+		<result property="flag" column="flag" />
+		<result property="onlineTime" column="online_time" />
+		<result property="offlineTime" column="offline_time" />
+		<result property="createTime" column="create_time" />
+		<result property="checkTime" column="check_time" />
+		<result property="noPass" column="no_pass" />
+	</resultMap>
+
+	<sql id="sql_column_items">
+		id,
+		banner_id,
+		state,
+		name,
+		banner_http,
+		images_http,
+		click_number,
+		flag,
+		online_time,
+		offline_time,
+		create_time,
+		check_time,
+		no_pass
+	</sql>
+	<sql id="limit_sql">
+		<if test="page_sql != null and page_sql != ''">
+			${page_sql}
+		</if>
+	</sql>
+
+	<sql id="where_all">
+		<where>
+			flag = 1
+			<if test="findContent != null and findContent !='' ">
+				and (
+				LOWER(name) like
+				CONCAT("%",#{findContent,jdbcType=VARCHAR},"%") or
+				LOWER(banner_id)
+				like
+				CONCAT("%",#{findContent,jdbcType=VARCHAR},"%")
+				)
+			</if>
+		</where>
+	</sql>
+
+
+	<!-- 普通的分页查询 -->
+	<select id="findAll" resultMap="rsBanner">
+		select
+		<include refid="sql_column_items" />
+		from banner
+		<include refid="where_all" />
+		<include refid="limit_sql" />
+	</select>
+	<select id="findCount" resultMap="rsBanner">
+		select count(id) from banner
+		<include refid="where_all" />
+	</select>
+
+	<select id="findById" resultMap="rsBanner" parameterType="java.lang.Long">
+		select
+		<include refid="sql_column_items" />
+		from banner
+		<where>
+			ID = #{id} and flag=1
+		</where>
+	</select>
+
+	<insert id="add" parameterType="com.ylms.common.entity.Banner">
+		insert into banner
+		(
+		id,
+		banner_id,
+		name,
+		banner_http,
+		images_http,
+		online_time,
+		offline_time,
+		check_time,
+		create_time,
+		click_number,
+		state,
+		flag,
+		no_pass
+		)
+		values
+		(
+		#{id,jdbcType=BIGINT},
+		#{bannerId,jdbcType=VARCHAR},
+		#{name,jdbcType=VARCHAR},
+		#{bannerHttp,jdbcType=VARCHAR},
+		#{imagesHttp,jdbcType=VARCHAR},
+		#{onlineTime,jdbcType=DATE},
+		#{offlineTime,jdbcType=DATE},
+		#{checkTime,jdbcType=DATE},
+		now(),
+		0,
+		0,
+		1,
+		0
+		)
+	</insert>
+
+	<update id="update" parameterType="com.ylms.common.entity.Banner">
+		update banner
+		<set>
+			<if test=" bannerId != null ">banner_id = #{bannerId, jdbcType=VARCHAR}, </if>
+			<if test=" name != null ">name = #{name, jdbcType=VARCHAR}, </if>
+			<if test=" bannerHttp != null ">banner_http = #{bannerHttp, jdbcType=VARCHAR}, </if>
+			<if test=" imagesHttp != null ">images_http = #{imagesHttp, jdbcType=VARCHAR}, </if>
+			<if test=" clickNumber != null ">click_number = #{clickNumber, jdbcType=BIGINT}, </if>
+			<if test=" onlineTime != null ">online_time = #{clickTime,jdbcType=DATE},</if>
+			<if test=" checkTime != null ">check_time = #{checkTime,jdbcType=DATE},</if>
+			<if test=" createTime != null ">create_time = #{createTime,jdbcType=DATE},</if>
+			<if test=" flag != null ">flag = #{flag,jdbcType=INTEGER},</if>
+			<if test=" state != null ">state = #{state,jdbcType=INTEGER},</if>
+			<if test=" noPass != null ">no_pass = #{noPass,jdbcType=INTEGER},</if>
+			ID = #{id}
+			<where>
+				ID = #{id}
+			</where>
+		</set>
+	</update>
+	<!-- 并不是真正删除 -->
+	<update id="deleteById" parameterType="java.lang.Long">
+		update banner
+		<set>
+			flag = 2
+			<where>
+				ID = #{id}
+			</where>
+		</set>
+	</update>
+	<!-- banner列表上线 -->
+	<update id="onlineById" parameterType="java.lang.Long">
+		update banner
+		<set>
+			<!-- 上线时，添加当前时间 -->
+			state = 1,online_time = now()
+			<where>
+				ID = #{id}
+			</where>
+		</set>
+	</update>
+	<!-- banner列表下线 -->
+	<update id="offlineById" parameterType="java.lang.Long">
+		update banner
+		<set>
+			<!-- 下线时，添加当前时间 -->
+			state = 2,offline_time = now()
+			<where>
+				ID = #{id}
+			</where>
+		</set>
+	</update>
+	<!-- bannner列表审核通过 -->
+	<update id="check1ById" parameterType="java.lang.Long">
+		update banner
+		<set>
+			<!-- 审核时，添加当前时间 -->
+			no_pass = 1,check_time = now()
+			<where>
+				ID = #{id}
+			</where>
+		</set>
+	</update>
+	<!-- bannner列表审核不通过 -->
+	<update id="check2ById" parameterType="java.lang.Long">
+		update banner
+		<set>
+			<!-- 审核时，添加当前时间 -->
+			no_pass = 2,check_time = now()
+			<where>
+				ID = #{id}
+			</where>
+		</set>
+	</update>
+	
+	<select id="findAllByOnlie" resultMap="rsBanner" >
+	    select 
+	       <include refid="sql_column_items" />
+	       from banner
+	    <where>
+	       state=1 and flag=1
+	    </where>
+	</select>
+	
+	
+</mapper>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ylms.common.dao.TaskCountMapper">
+
+	<resultMap id="rsTaskCount" type="com.ylms.common.entity.TaskCount">
+		<result property="prefectureId" column="prefecture_id" />
+		<result property="taskId" column="ctask_id" />
+		<result property="complete" column="complete" />
+		<result property="nocomplete" column="nocomplete" />
+		<result property="ssscNumber" column="sssc_number" />
+		<result property="createTime" column="addcreate_time" />
+	</resultMap>
+
+	<sql id="sql_column_items">
+		prefecture_id,
+		ctask_id,
+		complete,
+		nocomplete,
+		sssc_number,
+		addcreate_time
+	</sql>
+
+	<select id="findTask" resultMap="rsTaskCount" parameterType="Map">
+		select
+		<include refid="sql_column_items" />
+		from task_count
+		<where>
+		    <if test="taskId!=null">
+			  and ctask_id = #{taskId,jdbcType=BIGINT} 
+		    </if>
+		    <if test="prefectureId!=null">
+			  and prefecture_id = #{prefectureId,jdbcType=VARCHAR} 
+		    </if>
+		    <if test="createTime!=null">
+			  and (LOWER(addcreate_time)=CONCAT(#{createTime,jdbcType=VARCHAR}))
+		    </if>
+		</where>
+	</select>
+
+	<!-- 定义存储过程 -->
+	<select id="prefectureCount" parameterType="Map" statementType="CALLABLE">
+		{
+		call prefectureCount(
+		#{p1,mode=IN,jdbcType=VARCHAR},
+		#{p2,mode=OUT,jdbcType=BIGINT},
+		#{p3,mode=OUT,jdbcType=BIGINT},
+		#{p4,mode=OUT,jdbcType=BIGINT}
+		)
+		}
+	</select>
+	<!-- 定义存储过程 -->
+	<select id="addTaskCount" parameterType="com.ylms.common.entity.TaskCount"
+		statementType="CALLABLE">
+		{
+		call addTaskCount(
+		#{prefectureId,mode=IN,jdbcType=VARCHAR},
+		#{taskId,mode=IN,jdbcType=BIGINT}
+		)
+		}
+	</select>
+	<!-- 定义存储过程 -->
+	<select id="addDayCount" parameterType="com.ylms.common.entity.TaskCount"
+		statementType="CALLABLE">
+		{
+		call addDayCount(
+		#{prefectureId,mode=IN,jdbcType=VARCHAR},
+		#{taskId,mode=IN,jdbcType=BIGINT}
+		)
+		}
+	</select>
+	<!-- 定义存储过程 -->
+	<select id="updateTaskSsscnumber" parameterType="com.ylms.common.entity.TaskCount"
+		statementType="CALLABLE">
+		{
+		call updateTaskSsscnumber(
+		#{prefectureId,mode=IN,jdbcType=VARCHAR},
+		#{taskId,mode=IN,jdbcType=BIGINT}
+		)
+		}
+	</select>
+	<!-- 定义存储过程 -->
+	<select id="updateDayCountAndTaskCount" parameterType="com.ylms.common.entity.TaskCount"
+		statementType="CALLABLE">
+		{
+		call updateDayCountAndTaskCount(
+		#{prefectureId,mode=IN,jdbcType=VARCHAR},
+		#{taskId,mode=IN,jdbcType=BIGINT}
+		)
+		}
+	</select>
+</mapper>

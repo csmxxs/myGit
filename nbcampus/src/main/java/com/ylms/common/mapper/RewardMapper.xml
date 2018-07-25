@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RewardMapper">
+	
+	<resultMap id="rsReward" type="com.ylms.common.entity.Reward">
+		<result property="id" column="id" />
+		<result property="account" column="account" />
+		<result property="accountType" column="account_type" />
+		<result property="residuum" column="residuum" />
+	</resultMap>
+	
+	<sql id="sql_column_items">
+		id, 
+		account, 
+		account_type, 
+		residuum
+	</sql>
+	
+	
+	<select id="findById" resultMap="rsReward" parameterType="java.lang.Long">
+		select  <include refid="sql_column_items"/> from reward
+		<where>
+			ID = #{id}
+		</where>
+	</select>
+	
+	
+	<select id="findList" resultMap="rsReward">
+		select  <include refid="sql_column_items"/> from reward
+		<where>
+			<if test="Reward != null and Reward.id != null ">  
+				and id = #{Reward.id}
+			</if>
+			<if test="Reward != null and Reward.account != null ">  
+				and account = #{Reward.account}
+			</if>
+			<if test="Reward != null and Reward.accountType != null ">  
+				and account_type = #{Reward.accountType}
+			</if>
+			<if test="Reward != null and Reward.residuum != null ">  
+				and residuum = #{Reward.residuum}
+			</if>
+		</where>
+		<if test="order != null and order != '' ">  
+			order by ${order} ${sort}
+		</if>
+	</select>
+	
+	<insert id="add" parameterType="com.ylms.common.entity.Reward">
+		insert into reward 
+			(
+			id, 
+			account, 
+			account_type, 
+			residuum
+			) 
+		values
+			(
+			#{id, jdbcType=INTEGER}, 
+			#{account, jdbcType=VARCHAR}, 
+			#{accountType, jdbcType=VARCHAR}, 
+			#{residuum, jdbcType=BIGINT}
+			)
+	</insert>
+	
+	<update id="update" parameterType="com.ylms.common.entity.Reward">
+		update reward
+			 <set> 
+				<if test=" account != null ">account = #{account, jdbcType=VARCHAR}, </if>
+				<if test=" accountType != null ">account_type = #{accountType, jdbcType=VARCHAR}, </if>
+				<if test=" residuum != null ">residuum = #{residuum, jdbcType=BIGINT}, </if>
+				ID = #{id}
+			<where>
+				ID = #{id}
+			</where>
+		</set>
+	</update>
+	
+	<delete id="deleteById" parameterType="java.lang.Long">
+		delete from reward
+		<where>
+			ID = #{id}
+		</where>
+	</delete>
+	
+</mapper>

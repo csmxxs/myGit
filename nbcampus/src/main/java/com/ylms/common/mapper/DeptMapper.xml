@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="DeptMapper">
+	
+	<resultMap id="rsDept" type="com.ylms.common.entity.Dept">
+		<result property="id" column="id" />
+		<result property="departmentKey" column="department_key" />
+		<result property="departmentValue" column="department_value" />
+		<result property="description" column="description" />
+		<result property="parentDepartmentkey" column="parent_departmentkey" />
+		<result property="createTime" column="create_time" />
+	</resultMap>
+	
+	<sql id="sql_column_items">
+		id, 
+		department_key, 
+		department_value, 
+		description, 
+		parent_departmentkey, 
+		create_time
+	</sql>
+	
+	
+	<select id="findById" resultMap="rsDept" parameterType="java.lang.Long">
+		select  <include refid="sql_column_items"/> from dept
+		<where>
+			ID = #{id}
+		</where>
+	</select>
+	
+	
+	<select id="findList" resultMap="rsDept">
+		select  <include refid="sql_column_items"/> from dept
+		<where>
+			<if test="Dept != null and Dept.id != null ">  
+				and id = #{Dept.id}
+			</if>
+			<if test="Dept != null and Dept.departmentKey != null ">  
+				and department_key = #{Dept.departmentKey}
+			</if>
+			<if test="Dept != null and Dept.departmentValue != null ">  
+				and department_value = #{Dept.departmentValue}
+			</if>
+			<if test="Dept != null and Dept.description != null ">  
+				and description = #{Dept.description}
+			</if>
+			<if test="Dept != null and Dept.parentDepartmentkey != null ">  
+				and parent_departmentkey = #{Dept.parentDepartmentkey}
+			</if>
+			<if test="Dept != null and Dept.createTime != null ">  
+				and create_time = #{Dept.createTime}
+			</if>
+		</where>
+		<if test="order != null and order != '' ">  
+			order by ${order} ${sort}
+		</if>
+	</select>
+	
+	<insert id="add" parameterType="com.ylms.common.entity.Dept">
+		insert into dept 
+			(
+			id, 
+			department_key, 
+			department_value, 
+			description, 
+			parent_departmentkey, 
+			create_time
+			) 
+		values
+			(
+			#{id, jdbcType=BIGINT}, 
+			#{departmentKey, jdbcType=VARCHAR}, 
+			#{departmentValue, jdbcType=VARCHAR}, 
+			#{description, jdbcType=VARCHAR}, 
+			#{parentDepartmentkey, jdbcType=VARCHAR}, 
+			#{createTime, jdbcType=VARCHAR}
+			)
+	</insert>
+	
+	<update id="update" parameterType="com.ylms.common.entity.Dept">
+		update dept
+			 <set> 
+				<if test=" departmentKey != null ">department_key = #{departmentKey, jdbcType=VARCHAR}, </if>
+				<if test=" departmentValue != null ">department_value = #{departmentValue, jdbcType=VARCHAR}, </if>
+				<if test=" description != null ">description = #{description, jdbcType=VARCHAR}, </if>
+				<if test=" parentDepartmentkey != null ">parent_departmentkey = #{parentDepartmentkey, jdbcType=VARCHAR}, </if>
+				<if test=" createTime != null ">create_time = #{createTime, jdbcType=VARCHAR}, </if>
+				ID = #{id}
+			<where>
+				ID = #{id}
+			</where>
+		</set>
+	</update>
+	
+	<delete id="deleteById" parameterType="java.lang.Long">
+		delete from dept
+		<where>
+			ID = #{id}
+		</where>
+	</delete>
+	
+</mapper>

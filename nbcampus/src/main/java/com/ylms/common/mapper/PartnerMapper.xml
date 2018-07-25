@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="PartnerMapper">
+	
+	<resultMap id="rsPartner" type="com.ylms.common.entity.Partner">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="tel" column="tel" />
+		<result property="nbNumber" column="nb_number" />
+		<result property="state" column="state" />
+		<result property="time" column="time" />
+		<result property="way" column="way" />
+		<result property="legalPerson" column="legal_person" />
+		<result property="identityCard" column="identity_card" />
+		<result property="images" column="images" />
+	</resultMap>
+	
+	<sql id="sql_column_items">
+		id, 
+		name, 
+		tel, 
+		nb_number, 
+		state, 
+		time, 
+		way, 
+		legal_person, 
+		identity_card, 
+		images
+	</sql>
+	
+	
+	<select id="findById" resultMap="rsPartner" parameterType="java.lang.Long">
+		select  <include refid="sql_column_items"/> from partner
+		<where>
+			ID = #{id}
+		</where>
+	</select>
+	
+	
+	<select id="findList" resultMap="rsPartner">
+		select  <include refid="sql_column_items"/> from partner
+		<where>
+			<if test="Partner != null and Partner.id != null ">  
+				and id = #{Partner.id}
+			</if>
+			<if test="Partner != null and Partner.name != null ">  
+				and name = #{Partner.name}
+			</if>
+			<if test="Partner != null and Partner.tel != null ">  
+				and tel = #{Partner.tel}
+			</if>
+			<if test="Partner != null and Partner.nbNumber != null ">  
+				and nb_number = #{Partner.nbNumber}
+			</if>
+			<if test="Partner != null and Partner.state != null ">  
+				and state = #{Partner.state}
+			</if>
+			<if test="timeBegin != null" >
+				<![CDATA[
+				and time >= #{timeBegin} 
+				]]> 
+			</if>
+			<if test="timeEnd != null" > 
+				<![CDATA[
+				and time <= #{timeEnd}
+				]]> 
+			</if>
+			<if test="Partner != null and Partner.way != null ">  
+				and way = #{Partner.way}
+			</if>
+			<if test="Partner != null and Partner.legalPerson != null ">  
+				and legal_person = #{Partner.legalPerson}
+			</if>
+			<if test="Partner != null and Partner.identityCard != null ">  
+				and identity_card = #{Partner.identityCard}
+			</if>
+			<if test="Partner != null and Partner.images != null ">  
+				and images = #{Partner.images}
+			</if>
+		</where>
+		<if test="order != null and order != '' ">  
+			order by ${order} ${sort}
+		</if>
+	</select>
+	
+	<insert id="add" parameterType="com.ylms.common.entity.Partner">
+		insert into partner 
+			(
+			id, 
+			name, 
+			tel, 
+			nb_number, 
+			state, 
+			time, 
+			way, 
+			legal_person, 
+			identity_card, 
+			images
+			) 
+		values
+			(
+			#{id, jdbcType=BIGINT}, 
+			#{name, jdbcType=VARCHAR}, 
+			#{tel, jdbcType=VARCHAR}, 
+			#{nbNumber, jdbcType=BIGINT}, 
+			#{state, jdbcType=INTEGER}, 
+			#{time, jdbcType=DATE}, 
+			#{way, jdbcType=INTEGER}, 
+			#{legalPerson, jdbcType=VARCHAR}, 
+			#{identityCard, jdbcType=VARCHAR}, 
+			#{images, jdbcType=VARCHAR}
+			)
+	</insert>
+	
+	<update id="update" parameterType="com.ylms.common.entity.Partner">
+		update partner
+			 <set> 
+				<if test=" name != null ">name = #{name, jdbcType=VARCHAR}, </if>
+				<if test=" tel != null ">tel = #{tel, jdbcType=VARCHAR}, </if>
+				<if test=" nbNumber != null ">nb_number = #{nbNumber, jdbcType=BIGINT}, </if>
+				<if test=" state != null ">state = #{state, jdbcType=INTEGER}, </if>
+				<if test=" time != null ">time = #{time, jdbcType=DATE}, </if>
+				<if test=" way != null ">way = #{way, jdbcType=INTEGER}, </if>
+				<if test=" legalPerson != null ">legal_person = #{legalPerson, jdbcType=VARCHAR}, </if>
+				<if test=" identityCard != null ">identity_card = #{identityCard, jdbcType=VARCHAR}, </if>
+				<if test=" images != null ">images = #{images, jdbcType=VARCHAR}, </if>
+				ID = #{id}
+			<where>
+				ID = #{id}
+			</where>
+		</set>
+	</update>
+	
+	<delete id="deleteById" parameterType="java.lang.Long">
+		delete from partner
+		<where>
+			ID = #{id}
+		</where>
+	</delete>
+	
+</mapper>

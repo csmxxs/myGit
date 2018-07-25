@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ylms.common.dao.DictMapper">
+
+	<resultMap id="rsDict" type="com.ylms.common.entity.Dict">
+		<result property="id" column="id" />
+		<result property="dictName" column="dict_name" />
+		<result property="ckey" column="ckey" />
+		<result property="cvalue" column="cvalue" />
+		<result property="useFlag" column="use_flag" />
+		<result property="orderNo" column="order_no" />
+		<result property="delFlag" column="del_flag" />
+		<result property="createDate" column="create_date" />
+	</resultMap>
+
+	<sql id="sql_column_items">
+		id,
+		dict_name,
+		ckey,
+		cvalue,
+		use_flag,
+		order_no,
+		del_flag,
+		create_date
+	</sql>
+
+	<sql id="limit_sql">
+		<if test="page_sql != null and page_sql != ''">
+			${page_sql}
+		</if>
+	</sql>
+
+	<sql id="where_all">
+		<where>
+			<if test="findContent != null and findContent !='' ">
+				and (
+				LOWER(dict_name) like
+				CONCAT("%",#{findContent,jdbcType=VARCHAR},"%")
+				)
+			</if>
+		</where>
+	</sql>
+
+
+	<!-- 普通的分页查询 -->
+	<select id="findAll" resultMap="rsDict">
+		select
+		<include refid="sql_column_items" />
+		from dict
+		<include refid="where_all" />
+		<include refid="limit_sql" />
+	</select>
+	<select id="findCount" resultMap="rsDict">
+		select count(id) from dict
+		<include refid="where_all" />
+	</select>
+
+	<select id="findById" resultMap="rsDict" parameterType="java.lang.Long">
+		select
+		<include refid="sql_column_items" />
+		from dict
+		<where>
+			ID = #{id}
+		</where>
+	</select>
+
+	<select id="findList" resultMap="rsDict" parameterType="java.util.Map">
+		select
+		<include refid="sql_column_items" />
+		from dict
+		<where>
+			<if test=" id != null ">
+				and id = #{id}
+			</if>
+			<if test="dictName != null ">
+				and dict_name = #{dictName}
+			</if>
+			<if test="ckey != null ">
+				and ckey = #{ckey}
+			</if>
+			<if test="cvalue != null ">
+				and cvalue = #{cvalue}
+			</if>
+			<if test="useFlag != null ">
+				and use_flag = #{useFlag}
+			</if>
+			<if test="orderNo != null ">
+				and order_no = #{orderNo}
+			</if>
+			<if test="delFlag != null ">
+				and del_flag = #{delFlag}
+			</if>
+			<if test="createDateBegin != null">
+				<![CDATA[
+				and create_date >= #{createDateBegin} 
+				]]>
+			</if>
+			<if test="createDateEnd != null"> 
+				<![CDATA[
+				and create_date <= #{createDateEnd}
+				]]>
+			</if>
+		</where>
+		<if test="order != null and order != '' ">
+			order by ${order} ${sort}
+		</if>
+	</select>
+
+	<insert id="add" parameterType="com.ylms.common.entity.Dict">
+		insert into dict
+		(
+		id,
+		dict_name,
+		ckey,
+		cvalue,
+		use_flag,
+		order_no,
+		del_flag,
+		create_date
+		)
+		values
+		(
+		#{id,
+		jdbcType=BIGINT},
+		#{dictName, jdbcType=VARCHAR},
+		#{ckey,
+		jdbcType=VARCHAR},
+		#{cvalue, jdbcType=VARCHAR},
+		#{useFlag,
+		jdbcType=BIGINT},
+		#{orderNo, jdbcType=BIGINT},
+		1,
+		now()
+		)
+	</insert>
+
+	<update id="update" parameterType="com.ylms.common.entity.Dict">
+		update dict
+		<set>
+			<if test=" dictName != null ">dict_name = #{dictName, jdbcType=VARCHAR}, </if>
+			<if test=" ckey != null ">ckey = #{ckey, jdbcType=VARCHAR}, </if>
+			<if test=" cvalue != null ">cvalue = #{cvalue, jdbcType=VARCHAR}, </if>
+			<if test=" useFlag != null ">use_flag = #{useFlag, jdbcType=BIGINT}, </if>
+			<if test=" orderNo != null ">order_no = #{orderNo, jdbcType=BIGINT}</if>
+		</set>
+		<where>
+			ID = #{id}
+		</where>
+	</update>
+
+	<delete id="deleteById" parameterType="java.lang.Long">
+		delete dict
+		<where>
+			ID = #{id}
+		</where>
+	</delete>
+
+</mapper>

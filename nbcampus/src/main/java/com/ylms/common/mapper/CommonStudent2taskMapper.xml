@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ylms.common.dao.CommonStudent2taskMapper">
+
+   <resultMap id="rsCommonStudent2task" type="com.ylms.common.entity.CommonStudent2task">
+		<result property="id" column="id" />
+		<result property="studentTel" column="student_tel" />
+		<result property="commonPrefectureId" column="common_prefecture_id" />
+		<result property="commonTaskId" column="common_task_id" />
+		<result property="commonTaskState" column="common_task_state" />
+		<result property="commonCollect" column="common_collect" />
+		<result property="ssscImagesBoolean" column="sssc_images_boolean" />
+		<result property="commonState" column="common_state" />
+		<result property="orderNo" column="order_no" />
+		<result property="requestNo" column="request_no" />
+		<result property="availableNum" column="available_num" />
+		<result property="taskSsscImagesUrl" column="task_sssc_images_url" />
+	</resultMap>
+
+	<sql id="sql_column_items">
+		id,
+		student_tel,
+		common_prefecture_id,
+		common_task_id,
+		common_task_state,
+		common_collect,
+		sssc_images_boolean,
+		common_state,
+		order_no,
+		request_no,
+		available_num,
+		task_sssc_images_url
+	</sql>
+
+
+	<sql id="limit_sql">
+		<if test="page_sql != null and page_sql != ''">
+			${page_sql}
+		</if>
+	</sql>
+
+	<sql id="where_all">
+		<where>
+			sssc_images_boolean=2
+			<if test="findContent != null and findContent !='' ">
+				and (
+				LOWER(student_tel) like
+				CONCAT("%",#{findContent,jdbcType=VARCHAR},"%")
+				)
+			</if>
+		</where>
+	</sql>
+
+
+	<!-- 普通的分页查询 -->
+	<select id="findAll" resultMap="rsCommonStudent2task">
+		select
+		<include refid="sql_column_items" />
+		from common_student2task
+		<include refid="where_all" />
+		<include refid="limit_sql" />
+	</select>
+	<select id="findCount" resultMap="rsCommonStudent2task">
+		select count(id) from common_student2task
+		<include refid="where_all" />
+	</select>
+
+	<select id="listByTel" resultMap="rsCommonStudent2task"
+		parameterType="String">
+		select
+		<include refid="sql_column_items" />
+		from common_student2task
+		<where>
+			student_tel=#{studentTel}
+		</where>
+	</select>
+
+	<select id="findByPrefectureIdTaskIdStudentTel" resultMap="rsCommonStudent2task"
+		parameterType="Map">
+		select
+		<include refid="sql_column_items" />
+		from common_student2task
+		<where>
+			student_tel=#{studentTel} and common_task_id=#{taskId}
+		</where>
+	</select>
+
+	<select id="findById" resultMap="rsCommonStudent2task"
+		parameterType="Long">
+		select
+		<include refid="sql_column_items" />
+		from common_student2task
+		<where>
+			ID=#{id,jdbcType=BIGINT}
+		</where>
+	</select>
+
+
+	<insert id="addCommonStudent2Task" parameterType="com.ylms.common.entity.CommonStudent2task">
+		insert into
+		common_student2task
+		(
+		student_tel,
+		common_prefecture_id,
+		common_task_id,
+		common_task_state,
+		common_collect,
+		sssc_images_boolean,
+		common_state,
+		order_no,
+		request_no,
+		available_num,
+		task_sssc_images_url
+		)
+		values
+		(
+		#{studentTel, jdbcType=VARCHAR},
+		#{commonPrefectureId,
+		jdbcType=VARCHAR},
+		#{commonTaskId, jdbcType=BIGINT},
+		#{commonTaskState,
+		jdbcType=INTEGER},
+		#{commonCollect,
+		jdbcType=INTEGER},
+		#{ssscImagesBoolean,
+		jdbcType=INTEGER},
+		1,
+		#{orderNo,
+		jdbcType=VARCHAR},
+		#{requestNo,
+		jdbcType=VARCHAR},
+		#{availableNum,
+		jdbcType=INTEGER},
+		#{taskSsscImagesUrl,
+		jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<update id="update" parameterType="com.ylms.common.entity.CommonStudent2task">
+		update common_student2task
+		<set>
+			<if test=" studentTel != null ">student_tel = #{studentTel, jdbcType=VARCHAR}, </if>
+			<if test=" commonPrefectureId != null ">common_prefecture_id = #{commonPrefectureId,
+				jdbcType=VARCHAR},
+			</if>
+			<if test=" commonTaskId != null ">common_task_id = #{commonTaskId, jdbcType=BIGINT}, </if>
+			<if test=" commonCollect != null ">common_collect = #{commonCollect, jdbcType=INTEGER}, </if>
+			<if test=" ssscImagesBoolean != null ">sssc_images_boolean = #{ssscImagesBoolean,
+				jdbcType=INTEGER},
+			</if>
+			<if test=" commonTaskState != null ">common_task_state = #{commonTaskState, jdbcType=INTEGER},
+			</if>
+			<if test=" commonState != null ">common_state = #{commonState, jdbcType=INTEGER},
+			</if>
+			<if test=" orderNo != null ">order_no = #{orderNo, jdbcType=VARCHAR},
+			</if>
+			<if test=" requestNo != null and requestNo!=''">request_no = #{requestNo, jdbcType=VARCHAR},
+			</if>
+			<if test=" availableNum != null ">available_num = #{availableNum, jdbcType=INTEGER},
+			</if>
+			<if test=" taskSsscImagesUrl != null ">task_sssc_images_url = #{taskSsscImagesUrl, jdbcType=VARCHAR}
+			</if>
+		</set>
+		<where>
+			ID=#{id}
+		</where>
+	</update>
+
+	<delete id="deleteCommonStudent2Task" parameterType="Long">
+		delete from common_student2task
+		<where>
+			ID=#{id}
+		</where>
+	</delete>
+
+</mapper>

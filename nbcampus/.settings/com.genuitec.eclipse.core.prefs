@@ -1,0 +1,4 @@
+eclipse.preferences.version=1
+validator.Checked=src/main/webapp/js/common/jquery/jquery1.8.3.min.js,src/main/webapp/WEB-INF/webCommon/web/nbcampus_wap/static/js/vendor.a43927d6e8ae209f4169.js,src/main/webapp/WEB-INF/webCommon/web/nbcampus_wap/static/js/app.ad406a76f5e79b28f000.js,src/main/webapp/WEB-INF/webCommon/web/nbcampus_wap/static/js/manifest.3ad1d5771e9b13dbdad2.js
+validator.Revalidate=true
+validator.Unchecked=

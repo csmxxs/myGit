@@ -1,0 +1,3 @@
+<!-- 
+这只是一个欺骗Tomcat的文件，也就是当Tomcat知道有这个静态页存在，所以去请求的时候，被 SpringMVC mvc servlet 拦截了,转向动态请求了
+ -->

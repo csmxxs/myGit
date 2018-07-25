@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ylms.common.dao.Prefecture2taskMapper">
+	
+	<resultMap id="rsPrefecture2task" type="com.ylms.common.entity.Prefecture2task">
+		<result property="prefectureId" column="prefectureId" />
+		<result property="taskId" column="taskId" />
+	</resultMap>
+	
+	<sql id="sql_column_items">
+		prefectureId, 
+		taskId
+	</sql>
+	
+	<select id="findList" resultMap="rsPrefecture2task" parameterType="Map">
+		select  <include refid="sql_column_items"/> from prefecture2task
+		<where>
+			<if test="prefectureId != null ">  
+				 prefectureId = #{prefectureId}
+			</if>
+		</where>
+	</select>
+	<!-- 根据任务ID删除 -->
+	<delete id="deleteById" parameterType="Map">
+		delete from prefecture2task
+		<where>
+		    <if test="taskId!=null">
+		       and taskId = #{taskId}
+		    </if>
+		    <if test="prefectureId!=null">
+		       and prefectureId = #{id}
+		    </if>
+		</where>
+	</delete>
+	<!-- 根据专区ID删除 -->
+	<delete id="deleteByPrefectureId" parameterType="String">
+		delete from prefecture2task
+		<where>
+			prefectureId = #{id}
+		</where>
+	</delete>
+	<!-- 添加列表到专区 -->
+	<insert id="addTaskById" parameterType="Map">
+		insert into prefecture2task 
+	         (prefectureId,taskId) value(#{id,jdbcType = VARCHAR},#{taskId,jdbcType = BIGINT})
+	</insert>	
+</mapper>

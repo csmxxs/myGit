@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ylms.common.dao.ShortcutMapper">
+	
+	<resultMap id="rsShortcut" type="com.ylms.common.entity.Shortcut">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="state" column="state" />
+		<result property="number" column="number" />
+		<result property="shortcutHttp" column="shortcut_http" />
+		<result property="images" column="images" />
+		<result property="flag" column="flag" />
+		<result property="createTime" column="create_time" />
+		<result property="shortcutId" column="shortcut_id" />
+	</resultMap>
+	
+	<sql id="sql_column_items">
+		id,
+		shortcut_id,
+		name, 
+		state, 
+		number, 
+		shortcut_http, 
+		images, 
+		flag,
+		create_time
+	</sql>
+	
+	<sql id="limit_sql">
+		<if test="page_sql != null and page_sql != ''">
+			${page_sql}
+		</if>
+	</sql>
+
+	<sql id="where_all">
+		<where>
+			flag = 1
+			<if test="findContent != null and findContent !='' ">
+				and (
+				LOWER(name) like
+				CONCAT("%",#{findContent,jdbcType=VARCHAR},"%")
+				)
+			</if>
+		</where>
+	</sql>
+
+
+	<!-- 普通的分页查询 -->
+	<select id="findAll" resultMap="rsShortcut">
+		select
+		<include refid="sql_column_items" />
+		from shortcut
+		<include refid="where_all" />
+		<include refid="limit_sql" />
+	</select>
+	<select id="findCount" resultMap="rsShortcut">
+		select count(id) from shortcut
+		<include refid="where_all" />
+	</select>
+	
+	
+	
+	<select id="findById" resultMap="rsShortcut" parameterType="java.lang.Long">
+		select  <include refid="sql_column_items"/> from shortcut
+		<where>
+			ID = #{id} and flag=1
+		</where>
+	</select>
+	
+	
+	<insert id="add" parameterType="com.ylms.common.entity.Shortcut">
+		insert into shortcut 
+			(
+			id,
+			shortcut_id, 
+			name, 
+			number, 
+			shortcut_http, 
+			images, 
+			state, 
+			flag,
+			create_time
+			) 
+		values
+			(
+			#{id, jdbcType=BIGINT},
+			#{shortcutId, jdbcType=VARCHAR}, 
+			#{name, jdbcType=VARCHAR}, 
+			#{number, jdbcType=INTEGER}, 
+			#{shortcutHttp, jdbcType=VARCHAR}, 
+			#{images, jdbcType=VARCHAR}, 
+			#{state, jdbcType=INTEGER}, 
+			1,
+			now()
+			)
+	</insert>
+	
+	<update id="update" parameterType="com.ylms.common.entity.Shortcut">
+		update shortcut
+			 <set> 
+				<if test=" name != null ">name = #{name, jdbcType=VARCHAR}, </if>
+				<if test=" shortcutId != null">shortcut_id = #{shortcutId, jdbcType=VARCHAR}, </if>
+				<if test=" state != null ">state = #{state, jdbcType=INTEGER}, </if>
+				<if test=" number != null ">number = #{number, jdbcType=INTEGER}, </if>
+				<if test=" shortcutHttp != null ">shortcut_http = #{shortcutHttp, jdbcType=VARCHAR}, </if>
+				<if test=" images != null ">images = #{images, jdbcType=VARCHAR}, </if>
+				<if test=" flag != null ">flag = #{flag, jdbcType=INTEGER}, </if>
+				<if test="createTime">create_time = #{createTime, jdbcType=DATE},</if>
+				ID = #{id}
+			<where>
+				ID = #{id}
+			</where>
+		</set>
+	</update>
+	
+	<update id="deleteById" parameterType="java.lang.Long">
+		update shortcut
+		 <set>
+		     flag=2
+			<where>
+				ID = #{id}
+			</where>
+		 </set>
+	</update>
+	
+	<select id="findAllByOnlie" resultMap="rsShortcut">
+	   select 
+	      <include refid="sql_column_items" />
+	    from shortcut 
+	    <where>
+            state=1 and flag=1	    
+	    </where>
+	</select>
+	
+</mapper>

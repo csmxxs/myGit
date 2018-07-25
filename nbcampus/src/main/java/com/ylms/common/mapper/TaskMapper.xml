@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ylms.common.dao.TaskMapper">
+
+	<resultMap id="rsTask" type="com.ylms.common.entity.Task">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="property" column="property" />
+		<result property="taskType" column="task_type" />
+		<result property="nbStimulate" column="nb_stimulate" />
+		<result property="generalize" column="generalize" />
+		<result property="logoImages" column="logo_images" />
+		<result property="text" column="text" />
+		<result property="tel" column="tel" />
+		<result property="taskId" column="task_id" />
+		<result property="noPass" column="no_pass" />
+		<result property="taskHttp" column="task_http" />
+		<result property="taskFulfilImg" column="task_fulfil_img" />
+		<result property="onlineTime" column="online_time" />
+		<result property="offlineTime" column="offline_time" />
+		<result property="flag" column="flag" />
+		<result property="state" column="state" />
+		<result property="createTime" column="create_time" />
+		<result property="checkTime" column="check_time" />
+	</resultMap>
+
+	<sql id="sql_column_items">
+		id,
+		name,
+		property,
+		task_type,
+		nb_stimulate,
+		generalize,
+		logo_images,
+		text,
+		tel,
+		task_id,
+		no_pass,
+		task_http,
+		task_fulfil_img,
+		online_time,
+		offline_time,
+		flag,
+		state,
+		create_time,
+		check_time
+	</sql>
+
+	<sql id="sql_column_task">
+		c.id,
+		c.name,
+		c.property,
+		c.task_type,
+		c.nb_stimulate,
+		c.generalize,
+		c.logo_images,
+		c.text,
+		c.tel,
+		c.task_id,
+		c.no_pass,
+		c.task_http,
+		c.task_fulfil_img,
+		c.online_time,
+		c.offline_time,
+		c.flag,
+		c.state,
+		c.create_time,
+		c.check_time
+	</sql>
+	<sql id="limit_sql">
+		<if test="page_sql != null and page_sql != ''">
+			${page_sql}
+		</if>
+	</sql>
+
+	<sql id="where_all">
+		<where>
+			flag = 1
+			<if test="findContent != null and findContent !='' ">
+				and (
+				LOWER(name) like
+				CONCAT("%",#{findContent,jdbcType=VARCHAR},"%")
+				)
+			</if>
+			<if test="noPass!=null">
+				and no_pass=#{noPass,jdbcType=INTEGER}
+			</if>
+		</where>
+	</sql>
+
+
+	<!-- 普通的分页查询 -->
+	<select id="findAll" resultMap="rsTask">
+		select
+		<include refid="sql_column_items" />
+		from task
+		<include refid="where_all" />
+		<include refid="limit_sql" />
+	</select>
+	<select id="findCount" resultMap="rsTask">
+		select count(id) from task
+		<include refid="where_all" />
+	</select>
+
+	<select id="findById" resultMap="rsTask" parameterType="java.lang.Long">
+		select
+		<include refid="sql_column_items" />
+		from task
+		<where>
+			ID = #{id} and flag=1
+		</where>
+	</select>
+
+	<insert id="add" parameterType="com.ylms.common.entity.Task">
+		insert into task
+		(
+		id,
+		name,
+		property,
+		task_type,
+		nb_stimulate,
+		generalize,
+		logo_images,
+		text,
+		tel,
+		task_id,
+		task_http,
+		task_fulfil_img,
+		online_time,
+		offline_time,
+		check_time,
+		state,
+		no_pass,
+		flag,
+		create_time
+		)
+		values
+		(
+		#{id,
+		jdbcType=VARCHAR},
+		#{name, jdbcType=VARCHAR},
+		#{property,
+		jdbcType=VARCHAR},
+		#{taskType, jdbcType=INTEGER},
+		#{nbStimulate,
+		jdbcType=INTEGER},
+		#{generalize, jdbcType=INTEGER},
+		#{logoImages,
+		jdbcType=VARCHAR},
+		#{text, jdbcType=VARCHAR},
+		#{tel, jdbcType=VARCHAR},
+		#{taskId, jdbcType=VARCHAR},
+		#{taskHttp, jdbcType=VARCHAR},
+		#{taskFulfilImg, jdbcType=VARCHAR},
+		#{onlineTime, jdbcType=DATE},
+		#{offlineTime, jdbcType=DATE},
+		#{checkTime, jdbcType=DATE},
+		0,
+		0,
+		1,
+		now()
+		)
+	</insert>
+
+	<update id="update" parameterType="com.ylms.common.entity.Task">
+		update task
+		<set>
+			<if test=" name != null ">name = #{name, jdbcType=VARCHAR}, </if>
+			<if test=" property != null ">property = #{property, jdbcType=VARCHAR}, </if>
+			<if test=" taskType != null ">task_type = #{taskType, jdbcType=INTEGER}, </if>
+			<if test=" nbStimulate != null ">nb_stimulate = #{nbStimulate, jdbcType=INTEGER}, </if>
+			<if test=" generalize != null ">generalize = #{generalize, jdbcType=INTEGER}, </if>
+			<if test=" logoImages != null ">logo_images = #{logoImages, jdbcType=VARCHAR}, </if>
+			<if test=" text != null ">text = #{text, jdbcType=VARCHAR}, </if>
+			<if test=" tel != null ">tel = #{tel, jdbcType=VARCHAR}, </if>
+			<if test=" taskId != null ">task_id = #{taskId, jdbcType=VARCHAR}, </if>
+			<if test=" taskHttp != null ">task_http = #{taskHttp, jdbcType=VARCHAR}, </if>
+			<if test=" taskFulfilImg != null ">task_fulfil_img = #{taskFulfilImg, jdbcType=VARCHAR},
+			</if>
+			<if test=" onlineTime != null ">online_time = #{onlineTime, jdbcType=DATE}, </if>
+			<if test=" offlineTime != null ">offline_time = #{offlineTime, jdbcType=DATE}, </if>
+			<if test=" state != null ">state = #{state, jdbcType=INTEGER}, </if>
+			<if test=" flag != null ">flag = #{flag, jdbcType=INTEGER}, </if>
+			<if test=" checkTime != null ">check_time = #{checkTime, jdbcType=DATE},</if>
+			<if test=" createTime != null ">create_time = #{createTime, jdbcType=DATE},</if>
+			<if test=" noPass != null ">no_pass = #{noPass, jdbcType=INTEGER}, </if>
+			ID = #{id}
+			<where>
+				ID = #{id}
+			</where>
+		</set>
+	</update>
+	<!-- 修改任务列表的状态，不是真正的删除 -->
+	<update id="deleteById" parameterType="java.lang.Long">
+		update task
+		<set>
+			flag=2
+			<where>
+				ID = #{id}
+			</where>
+		</set>
+	</update>
+	<!-- 任务列表上线 -->
+	<update id="onlineById" parameterType="java.lang.Long">
+		update task
+		<set>
+			<!-- 上线时，添加当前时间 -->
+			state = 1,online_time = now()
+		</set>
+		<where>
+			ID = #{id}
+		</where>
+	</update>
+	<!-- 任务列表下线 -->
+	<update id="offlineById" parameterType="java.lang.Long">
+		update task
+		<set>
+			<!-- 下线时，添加当前时间 -->
+			state = 2,offline_time = now()
+			<where>
+				ID = #{id}
+			</where>
+		</set>
+	</update>
+	<!-- 任务列表审核 -->
+	<update id="check1ById" parameterType="java.lang.Long">
+		update task
+		<set>
+			<!-- 审核时，添加当前时间 -->
+			no_pass =1,check_time = now()
+			<where>
+				ID = #{id}
+			</where>
+		</set>
+	</update>
+	<update id="check2ById" parameterType="java.lang.Long">
+		update task
+		<set>
+			<!-- 审核时，添加当前时间 -->
+			no_pass =2,check_time = now()
+			<where>
+				ID = #{id}
+			</where>
+		</set>
+	</update>
+	<!-- 查询任务专区拥有的任务列表 -->
+	<select id="listById" resultMap="rsTask" parameterType="Long">
+		select
+		<include refid="sql_column_task" />
+		from prefecture2task b,task c
+		<where>
+			 b.taskId=c.id and b.prefectureId=#{id}
+		</where>
+	</select>
+	
+	
+	<select id="list" resultMap="rsTask" parameterType="Long">
+		select
+		<include refid="sql_column_task" />
+		from prefecture a,prefecture2task b,task c
+		<where>
+			a.id=b.prefectureId and b.taskId=c.id and c.state=1 and
+			a.id=#{id}
+		</where>
+	</select>
+
+
+	<!-- (这是自己写的自定义分页)任务列表效果日汇总 -->
+	<sql id="limitSql">
+		<if test="page_sql != null and page_sql != ''">
+			${page_sql}
+		</if>
+	</sql>
+	<sql id="whereAll">
+		<where>
+		       c.id=b.dtask_id
+			<if test="findContent != null and findContent !='' ">
+				and
+				(LOWER(b.dcreate_time) like CONCAT("%",#{findContent,jdbcType=VARCHAR},"%"))
+			</if>
+			<if test="prefectureId != null and prefectureId !=''">
+			    and b.prefecture_id=#{prefectureId}
+			</if>
+		</where>
+	</sql>
+	<select id="listTaskCount" resultMap="rsTask">
+		select
+		<include refid="sql_column_task" />
+		,b.dcreate_time dayCountTime,b.no_complete_number
+		dayclickNumber,b.complete_number daycompleteNumber
+		 from task c,daycount b
+		<include refid="whereAll" />
+		<include refid="limitSql" />
+	</select>
+
+	<select id="findTaskCount" resultMap="rsTask">
+		select count(c.id) from task c,daycount b
+		<include refid="whereAll" />
+	</select>
+
+	<!-- 查询学生收藏的任务列表(在线，下线的都查) -->
+	<select id="getTaskcollectByStudentTel" resultMap="rsTask"
+		parameterType="String">
+		select
+		<include refid="sql_column_task" />,b.task_state taskState,b.prefecture_id prefectureId,b.collect cll
+		 from task c,student_task b
+		<where>
+			c.id=b.task_id and b.student_tel=#{studentTel,jdbcType=VARCHAR}
+		</where>
+	</select>
+	
+	
+	<!-- 根据省份显示(在线) -->
+	<select id="findAllByProvinceId" resultMap="rsTask"
+		parameterType="Map">
+		select
+		<include refid="sql_column_task" />,a.id prefectureId
+		from prefecture a,prefecture2task b,task c
+		<where>
+			a.id=b.prefectureId and b.taskId=c.id and c.state=1 and
+		    c.generalize= #{provinceId} and a.id=#{prefectureId}
+		</where>
+	</select>
+
+    <!--  为用户查询进行中任务列表 在线，下线的都查 -->
+	<select id="getCommonStudentTask" resultMap="rsTask" parameterType="String">
+		select
+		<include refid="sql_column_task" />,b.common_prefecture_id prefectureId,b.common_task_state taskState,b.common_collect cll,b.sssc_images_boolean ssscImagesBoolean
+		from  task c, common_student2task b
+		<where>
+			b.student_tel=#{studentTel,jdbcType=VARCHAR} and c.id=b.common_task_id
+		</where>
+	</select>
+
+</mapper>

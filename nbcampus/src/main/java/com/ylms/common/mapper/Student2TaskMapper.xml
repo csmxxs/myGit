@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ylms.common.dao.TaskcollectMapper">
+
+	<resultMap id="rsStudent2Task" type="com.ylms.common.entity.Student2Task">
+	   
+		<result property="id" column="id" />
+		<result property="studentTel" column="student_tel" />
+		<result property="prefectureId" column="prefecture_id" />
+		<result property="taskId" column="task_id" />
+		<result property="taskState" column="task_state" />
+		<result property="collect" column="collect" />
+		<result property="ssscImagesBoolean" column="sssc_images_boolean" />
+	</resultMap>
+
+	<sql id="sql_column_items">
+	    id,
+		student_tel,
+		prefecture_id,
+		task_id,
+		task_state,
+		collect,
+		sssc_images_boolean
+	</sql>
+	<select id="listByTel" resultMap="rsStudent2Task" parameterType="String">
+		select
+		<include refid="sql_column_items" />
+		from student_task
+		<where>
+			student_tel=#{studentTel}
+		</where>
+	</select>
+
+	<select id="findByPrefectureIdTaskIdStudentTel" resultMap="rsStudent2Task" parameterType="Map">
+		select
+		<include refid="sql_column_items" />
+		from student_task
+		<where>
+			student_tel=#{studentTel} and task_id=#{taskId}
+		</where>
+	</select>
+
+
+	<insert id="addTaskcollect" parameterType="com.ylms.common.entity.Student2Task">
+		insert into
+		student_task
+		(
+		student_tel,
+		prefecture_id,
+		task_id,
+		task_state,
+		collect,
+		sssc_images_boolean
+		)
+		values
+		(
+		#{studentTel, jdbcType=VARCHAR},
+		#{prefectureId,
+		jdbcType=VARCHAR},
+		#{taskId, jdbcType=BIGINT},
+		#{taskState,jdbcType=INTEGER},
+		#{collect,jdbcType=INTEGER},
+		#{ssscImagesBoolean,jdbcType=INTEGER}
+		)
+	</insert>
+
+	<update id="update" parameterType="com.ylms.common.entity.Student2Task">
+		update student_task
+		<set>
+			<if test=" studentTel != null ">student_tel = #{studentTel, jdbcType=VARCHAR}, </if>
+			<if test=" prefectureId != null ">prefecture_id = #{prefectureId, jdbcType=VARCHAR}, </if>
+			<if test=" taskId != null ">task_id = #{taskId, jdbcType=BIGINT}, </if>
+			<if test=" taskState != null ">task_state = #{taskState, jdbcType=INTEGER}, </if>
+			<if test="collect != null ">collect = #{collect, jdbcType=INTEGER}, </if>
+			<if test="ssscImagesBoolean != null ">sssc_images_boolean = #{ssscImagesBoolean, jdbcType=INTEGER} </if>
+		</set>
+		<where>
+			ID=#{id}
+		</where>
+	</update>
+
+	<delete id="deleteById" parameterType="Long">
+		delete from student_task
+		<where>
+			ID=#{id}
+		</where>
+	</delete>
+
+	<delete id="deleteTaskcollect" parameterType="Map">
+		delete from student_task
+		<where>
+			student_tel=#{studentTel} and task_id=#{taskId}
+		</where>
+	</delete>
+</mapper>
